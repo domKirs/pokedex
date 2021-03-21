@@ -47,22 +47,40 @@ function updateMain(map){
   }
 }
 
-function updateSceen({sprites}) {
-  const spriteUrl = sprites.versions['generation-i']['red-blue'].front_gray
+function saveDataDetail({height, id, name, sprites, types, weight}) {
+  const spriteUrl = sprites.versions['generation-i']['red-blue'].front_gray;
+  const dataDetail = {
+    id,
+    name,
+    spriteUrl,
+    weight,
+    height,
+    types
+  };
+  const mapObj = pokemonDataDetail.set(name, dataDetail);
+  return Promise.resolve(mapObj.get(name));
+}
+
+function updateSceen(mapObj) {
   if(screen.firstChild) {
     screen.removeChild(screen.firstChild);
   }
   let img = document.createElement('img');
-  img.setAttribute('src', spriteUrl);
+  img.setAttribute('src', mapObj.spriteUrl);
   screen.appendChild(img);
 }
 
 function onClick(event) {
   const name = event.target.getAttribute('name');
-  fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
-    .then(response =>  checkIfOk(response))
-    .then(response => response.json())
-    .then(data => updateSceen(data));
+  if (pokemonDataDetail.get(name)) {
+    updateSceen(pokemonDataDetail.get(name));
+  } else {
+    fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
+      .then(response =>  checkIfOk(response))
+      .then(response => response.json())
+      .then(data => saveDataDetail(data))
+      .then(mapObj => updateSceen(mapObj));
+  }
 }
 
 
