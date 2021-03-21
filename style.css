@@ -1,1 +1,10 @@
+body {
+    margin: 0;
+}
 
+.screen {
+    width: 192px;
+    height: 192px;
+    background-color: red;
+    margin: 0 auto;
+}
